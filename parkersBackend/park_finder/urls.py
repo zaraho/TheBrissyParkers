@@ -15,4 +15,10 @@ urlpatterns = [
         views.search,
         name="search",
     ),
+
+    path(
+    "autocomplete/",
+    views.address_autocomplete,
+    name="address_autocomplete",
+),
 ]

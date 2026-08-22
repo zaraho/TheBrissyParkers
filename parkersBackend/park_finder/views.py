@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.decorators.http import require_GET
-
-from .geocoding import geocode_address
+from django.http import JsonResponse
+from .geocoding import geocode_address, search_addresses
 from .queries import find_carpark
 
 
@@ -11,6 +11,19 @@ def home(request):
         request,
         "park_finder/index.html",
     )
+
+@require_GET
+def address_autocomplete(request):
+    query = request.GET.get("q", "").strip()
+
+    if len(query) < 3:
+        return JsonResponse({"results": []})
+
+    results = search_addresses(query)
+
+    return JsonResponse({
+        "results": results
+    })
 
 
 @require_GET

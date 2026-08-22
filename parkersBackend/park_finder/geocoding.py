@@ -34,3 +34,29 @@ def geocode_address(address):
     except (GeocoderTimedOut, GeocoderServiceError) as e:
         print("Geocoding error:", e)
         return None
+    
+def search_addresses(query):
+    if not query or len(query) < 3:
+        return []
+
+    search_query = f"{query}, Brisbane, Queensland, Australia"
+
+    locations = geolocator.geocode(
+        search_query,
+        country_codes="au",
+        exactly_one=False,
+        limit=5,
+        timeout=10,
+    )
+
+    if not locations:
+        return []
+
+    return [
+        {
+            "display_name": location.address,
+            "latitude": location.latitude,
+            "longitude": location.longitude,
+        }
+        for location in locations
+    ]
