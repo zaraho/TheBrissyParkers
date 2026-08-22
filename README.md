@@ -256,8 +256,6 @@ DB_PORT=5432
 MAPBOX_ACCESS_TOKEN=your-mapbox-token
 ```
 
-> [!IMPORTANT]
-> Never commit your `.env` file, API tokens or database passwords to GitHub.
 
 ### 5. Enable PostGIS
 
