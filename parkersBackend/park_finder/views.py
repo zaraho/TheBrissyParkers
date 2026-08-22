@@ -65,6 +65,8 @@ def search(request):
     # -----------------------------
 
     coordinates = geocode_address(destination)
+    print("SEARCH DESTINATION:", destination)
+    print("SEARCH COORDINATES:", coordinates)
 
     if coordinates is None:
         return render(
@@ -91,6 +93,7 @@ def search(request):
         max_distance=radius,
         required_stay=required_stay,
     )
+    print("FIRST RESULT:", results[0] if results else None)
 
 
     # -----------------------------
@@ -104,7 +107,11 @@ def search(request):
 
     elif sort_by == "price":
         results.sort(
-            key=lambda parking: parking["price"]
+            key=lambda parking: (
+                parking["price"]
+                if parking["price"] is not None
+                else 0
+            )
         )
 
     elif sort_by == "stay":

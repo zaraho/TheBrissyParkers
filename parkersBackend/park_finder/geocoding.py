@@ -9,17 +9,15 @@ geolocator = Nominatim(
 
 def geocode_address(address):
     """
-    Converts a user's address into latitude and longitude.
+    Convert an address into latitude and longitude.
     """
 
     try:
-        search_address = f"{address}, Brisbane, Queensland, Australia"
-
         location = geolocator.geocode(
-            search_address,
+            address,
             country_codes="au",
             exactly_one=True,
-            timeout=10
+            timeout=10,
         )
 
         if location is None:
@@ -28,7 +26,7 @@ def geocode_address(address):
         return {
             "latitude": location.latitude,
             "longitude": location.longitude,
-            "display_name": location.address
+            "display_name": location.address,
         }
 
     except (GeocoderTimedOut, GeocoderServiceError) as e:

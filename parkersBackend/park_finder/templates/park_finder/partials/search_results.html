@@ -26,25 +26,21 @@
 
   <p>
     <strong>Price:</strong>
-
-    ${{ spot.price }}/hour
+    {{ spot.price|default_if_none:"FREE" }}
   </p>
 
   <p>
     <strong>Distance:</strong>
-
     {{ spot.distance_m }} m
   </p>
 
   <p>
     <strong>Maximum stay:</strong>
-
     {{ spot.max_stay_hrs }} hours
   </p>
 
   <p>
     <strong>Meter:</strong>
-
     {{ spot.meter_no }}
   </p>
 
