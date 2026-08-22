@@ -1,32 +1,26 @@
-Bris Parker
+# TheBrissyParkers
 
 Find smarter parking in Brisbane.
 
 Bris Parker is a hackathon web application that helps drivers find suitable parking near their destination. A user enters a destination, arrival and departure times, and preferred walking distance. The application searches Brisbane parking data and recommends options based on price, walking distance, and maximum permitted stay.
 
-The Problem
+## The Problem
 
 Finding parking in Brisbane can be confusing and time-consuming. Parking restrictions, prices, maximum stay limits, and distance from a destination are often spread across different signs and services.
 
 Bris Parker brings this information together and presents the most useful options on an interactive map.
 
-Key Features
+## Key Features
 
-Search parking by address or destination
+- Search parking by address or destination
+- Choose arrival and departure times
+- Set a preferred walking distance or search radius
+- View parking locations on an interactive map
+- Compare price, walking distance, and maximum stay
+- Rank results by Best Choice, Least Walking, or Lowest Cost
+- Display relevant parking restrictions and sign information
 
-Choose arrival and departure times
-
-Set a preferred walking distance or search radius
-
-View parking locations on an interactive map
-
-Compare price, walking distance, and maximum stay
-
-Rank results by Best Choice, Least Walking, or Lowest Cost
-
-Display relevant parking restrictions and sign information
-
-User Story
+## User Story
 
 As a driver, I want to search for parking near my destination based on walking distance, price, and maximum stay so that I can quickly choose the most suitable parking option.
 
@@ -44,57 +38,19 @@ The suggested parking locations appear on an interactive map.
 
 The user can sort or filter the returned options.
 
-Tech Stack
+## Tech Stack
 
-Layer
+| Technology | Purpose |
+|---|---|
+| **Django** | Backend | Ila |
+| **PostgreSQL + PostGIS** | Database & spatial queries | Suha |
+| **HTMX** | Dynamic page updates | Rizwan |
+| **Leaflet.js** | Interactive map | Dhruti/Zara |
+| **OpenStreetMap** | Map data | Dhruti/Zara |
+| **Mapbox** | Address geocoding | Dhruti/Zara |
+| **Brisbane City Council Open Data** | Parking data | Dhruti/Zara 
 
-Technology
-
-Purpose
-
-Backend
-
-Python, Django
-
-Request handling, business logic, queries, and server-rendered views
-
-Frontend
-
-HTML, CSS, JavaScript, HTMX
-
-Responsive interface and partial page updates
-
-Database
-
-PostgreSQL with PostGIS
-
-Parking records and spatial queries
-
-Map data
-
-OpenStreetMap
-
-Base map tiles and street information
-
-Map library
-
-Leaflet.js
-
-Interactive map, markers, popups, and search-radius display
-
-Geocoding
-
-Mapbox Geocoding API
-
-Converts a destination address to latitude and longitude
-
-Dataset
-
-Brisbane City Council open data
-
-Parking signs, restrictions, and location data
-
-Architecture
+## Architecture
 
 Bris Parker uses Django's Model–Template–View architecture with a spatial database and external map services.
 
