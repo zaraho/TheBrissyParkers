@@ -1,14 +1,14 @@
 # TheBrissyParkers
 
-Find smarter parking in Brisbane.
+# 🚗 Bris Parker
 
-Bris Parker is a hackathon web application that helps drivers find suitable parking near their destination. A user enters a destination, arrival and departure times, and preferred walking distance. The application searches Brisbane parking data and recommends options based on price, walking distance, and maximum permitted stay.
+### Smarter parking choices for Brisbane
 
 ## The Problem
 
-Finding parking in Brisbane can be confusing and time-consuming. Parking restrictions, prices, maximum stay limits, and distance from a destination are often spread across different signs and services.
+**A hackathon application that helps drivers find suitable parking based on walking distance, price and maximum stay.**
 
-Bris Parker brings this information together and presents the most useful options on an interactive map.
+</div>
 
 ## Key Features
 
@@ -22,21 +22,35 @@ Bris Parker brings this information together and presents the most useful option
 
 ## User Story
 
-As a driver, I want to search for parking near my destination based on walking distance, price, and maximum stay so that I can quickly choose the most suitable parking option.
+Finding parking in Brisbane can be confusing and time-consuming. Parking prices, operating hours, maximum-stay limits and other restrictions are often spread across different signs and services.
 
-Acceptance Criteria
+Bris Parker brings this information together and presents suitable parking options in one place, allowing drivers to make a better decision before beginning their journey.
 
-The user can enter a valid destination and parking preferences.
+## Key Features
 
-The system converts the destination into geographic coordinates.
+- Search for parking by address or destination
+- Select arrival and departure times
+- Set a preferred walking distance or search radius
+- View nearby parking locations on an interactive map
+- Compare price, walking distance and maximum stay
+- Rank results by **Best Choice**, **Least Walking** or **Lowest Cost**
+- Display relevant parking restrictions and sign information
+- Update search results dynamically using HTMX
 
-The system returns parking spots within the selected radius.
+## User Story
 
-Each suggestion displays its price, walking distance, and maximum stay.
+> As a driver, I want to find parking near my destination based on walking distance, price and maximum stay, so that I can quickly choose the most suitable parking option.
 
-The suggested parking locations appear on an interactive map.
+### Acceptance Criteria
 
-The user can sort or filter the returned options.
+- [ ] The user can enter a valid destination.
+- [ ] The user can enter an arrival and departure time.
+- [ ] The user can select a walking distance or search radius.
+- [ ] The system converts the destination into geographic coordinates.
+- [ ] The system returns valid parking spots within the selected radius.
+- [ ] Each result displays its price, walking distance and maximum stay.
+- [ ] Suggested parking locations appear on an interactive map.
+- [ ] The user can rank or filter the returned parking options.
 
 ## Tech Stack
 
@@ -54,215 +68,263 @@ The user can sort or filter the returned options.
 
 Bris Parker uses Django's Model–Template–View architecture with a spatial database and external map services.
 
+```mermaid
 flowchart TD
-    A["User search form"] --> B["Django view"]
-    B --> C["Geocoding service"]
-    C --> B
-    B --> D["Search and ranking service"]
-    D --> E["PostgreSQL + PostGIS"]
-    E --> D
-    D --> F["Django template / HTMX partial"]
-    F --> G["Leaflet + OpenStreetMap"]
-    G --> H["Ranked parking suggestions"]
+    A["Driver"] --> B["Search Form: HTML + HTMX"]
 
-Request Flow
+    B -->|"Destination, times and preferences"| C["Django Backend"]
 
-The user submits a destination, arrival time, departure time, and walking-distance preference.
+    C --> D{"Is the input valid?"}
 
-Django validates the form input.
+    D -->|"No"| E["Return validation errors"]
+    E --> B
 
-The geocoding service converts the destination into latitude and longitude.
+    D -->|"Yes"| F["Mapbox Geocoding API"]
+    F -->|"Latitude and longitude"| C
 
-PostGIS finds parking locations within the selected radius.
+    C --> G["Parking Search Service"]
 
-Django filters invalid options by time restrictions and maximum stay.
+    G --> H["PostgreSQL + PostGIS"]
+    H -->|"Nearby parking records"| G
 
-The ranking logic scores the remaining options by distance, cost, and suitability.
+    G --> I["Restriction Filter"]
+    I --> J["Distance, Price and Stay Calculator"]
+    J --> K["Parking Ranking Service"]
 
-Django returns an HTML template or HTMX partial.
+    K --> L["Django Template"]
+    L --> M["HTMX Results Update"]
 
-Leaflet plots the recommended locations on the OpenStreetMap map.
+    M --> N["Leaflet.js Map"]
+    O["OpenStreetMap Tiles"] --> N
 
-Suggested Project Structure
+    N --> P["Parking Markers and Search Radius"]
+    M --> Q["Ranked Parking Cards"]
 
+    P --> R["Parking Search Results"]
+    Q --> R
+    R --> A
+```
+
+### Architecture Flow
+
+1. The driver submits a destination, arrival time, departure time and parking preferences.
+2. Django validates the submitted information.
+3. Mapbox converts the destination address into latitude and longitude.
+4. PostGIS finds parking locations within the selected radius.
+5. The application removes parking options that do not satisfy the selected times or maximum stay.
+6. The remaining options are scored based on distance, price and stay suitability.
+7. Django returns the ranked results as an HTMX partial.
+8. Leaflet displays the parking locations on an OpenStreetMap map.
+
+## Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant UI as HTML + HTMX
+    participant View as Django View
+    participant Geo as Geocoding API
+    participant Service as Parking Service
+    participant DB as PostgreSQL + PostGIS
+    participant Map as Leaflet Map
+
+    User->>UI: Enter destination, times and preferences
+    UI->>View: Submit parking search
+    View->>View: Validate input
+
+    alt Invalid input
+        View-->>UI: Return validation errors
+        UI-->>User: Display error messages
+    else Valid input
+        View->>Geo: Send destination address
+        Geo-->>View: Return coordinates
+
+        View->>Service: Search coordinates, radius and times
+        Service->>DB: Query nearby parking locations
+        DB-->>Service: Return parking records
+
+        Service->>Service: Check parking restrictions
+        Service->>Service: Calculate distance and price
+        Service->>Service: Rank suitable options
+
+        Service-->>View: Return ranked results
+        View-->>UI: Render HTMX results template
+        UI->>Map: Add markers and search radius
+        Map-->>User: Display parking recommendations
+    end
+```
+
+## Ranking Strategy
+
+Each valid parking option receives a suitability score.
+
+```text
+Suitability Score = Distance Score + Price Score + Stay Score
+```
+
+The weighting changes according to the user's selected preference.
+
+| Preference | Ranking Behaviour |
+|---|---|
+| Best Choice | Balances distance, cost and maximum-stay suitability |
+| Least Walking | Gives the greatest weight to walking distance |
+| Lowest Cost | Prioritises free and lower-cost parking |
+
+## Project Structure
+
+```text
 TheBrissyParkers/
 ├── manage.py
 ├── requirements.txt
 ├── .env.example
-├── bris_parker/              # Django project configuration
+├── bris_parker/
 │   ├── settings.py
 │   ├── urls.py
 │   └── wsgi.py
-├── parking/                  # Main Django application
+├── parking/
 │   ├── migrations/
 │   ├── services/
 │   │   ├── geocoding.py
 │   │   └── parking_search.py
-│   ├── models.py
 │   ├── forms.py
-│   ├── views.py
-│   └── urls.py
+│   ├── models.py
+│   ├── urls.py
+│   └── views.py
 ├── templates/
 │   └── parking/
 ├── static/
 │   ├── css/
 │   └── js/
-└── data/                     # Imported or processed open datasets
+└── data/
+```
 
-Data Model
+## Getting Started
 
-A parking record can contain:
+### Prerequisites
 
-id
+Make sure the following software is installed:
 
-latitude and longitude
+- Git
+- Python 3.11 or later
+- PostgreSQL
+- PostGIS extension
+- A Mapbox access token
 
-location as a PostGIS point
+### 1. Clone the Repository
 
-street_name
-
-parking_type
-
-price_per_hour
-
-maximum_stay_minutes
-
-restriction_start and restriction_end
-
-valid_days
-
-sign_description
-
-Ranking Approach
-
-For the hackathon prototype, each valid parking option can receive a weighted suitability score:
-
-score = distance_score + price_score + stay_score
-
-The weighting changes with the user's selected preference:
-
-Best Choice: balances walking distance, cost, and stay suitability.
-
-Least Walking: gives the greatest weight to distance.
-
-Lowest Cost: gives the greatest weight to free or low-cost parking.
-
-Getting Started
-
-Prerequisites
-
-Python 3.11 or later
-
-PostgreSQL
-
-PostGIS extension
-
-Git
-
-A Mapbox access token, if Mapbox is used for geocoding
-
-Installation
-
-Clone the repository:
-
+```bash
 git clone https://github.com/zaraho/TheBrissyParkers.git
 cd TheBrissyParkers
+```
 
-Create and activate a virtual environment:
+### 2. Create a Virtual Environment
 
-Windows PowerShell
+#### Windows PowerShell
 
+```powershell
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
+```
 
-macOS/Linux
+#### macOS or Linux
 
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
+```
 
-Install the dependencies:
+### 3. Install the Dependencies
 
+```bash
 pip install -r requirements.txt
+```
 
-Create a .env file from .env.example and configure the database and geocoding values:
+### 4. Configure Environment Variables
 
+Create a file named `.env` in the project root.
+
+```env
 SECRET_KEY=replace-with-a-local-secret
 DEBUG=True
+
 DB_NAME=bris_parker
 DB_USER=postgres
 DB_PASSWORD=your-password
 DB_HOST=localhost
 DB_PORT=5432
+
 MAPBOX_ACCESS_TOKEN=your-mapbox-token
+```
 
-Enable PostGIS in the project database:
+> [!IMPORTANT]
+> Never commit your `.env` file, API tokens or database passwords to GitHub.
 
-CREATE EXTENSION postgis;
+### 5. Enable PostGIS
 
-Apply the Django migrations:
+Run the following SQL statement inside the project database:
 
+```sql
+CREATE EXTENSION IF NOT EXISTS postgis;
+```
+
+### 6. Apply the Database Migrations
+
+```bash
 python manage.py migrate
+```
 
-Import the parking dataset using the project's import command, when available:
+### 7. Import Parking Data
 
+When the parking-data import command has been implemented, run:
+
+```bash
 python manage.py import_parking_data
+```
 
-Start the development server:
+### 8. Start the Application
 
+```bash
 python manage.py runserver
+```
 
-Open http://127.0.0.1:8000/ in a browser.
+Open the following address in your browser:
 
-Hackathon MVP
+```text
+http://127.0.0.1:8000/
+```
 
-The minimum viable product focuses on:
+## Hackathon MVP
 
-One destination search form
+The minimum viable product includes:
 
-Geocoding the entered address
+- Destination and parking-preference search form
+- Address geocoding
+- Radius-based parking search
+- Parking restriction filtering
+- Three result-ranking modes
+- Interactive parking map
+- Parking markers and result cards
+- Price, distance and maximum-stay information
 
-Radius-based parking queries
+## Future Improvements
 
-Three ranking modes
+- Real-time parking availability
+- Accessible-parking filters
+- EV charging and motorcycle-parking filters
+- Live traffic and event information
+- Walking directions from the parking location
+- Saved destinations and recent searches
+- Community reporting for outdated restrictions
+- Predictive parking availability using historical demand
 
-Parking markers and result cards
+## Authors
 
-Price, distance, and maximum-stay information
+Built for the **Innovation That Helps Hackathon** by:
 
-Future Improvements
+| Team Member | Contribution |
+|---|---|
+| **Ila** | Django backend |
+| **Rizwan** | HTMX and frontend |
+| **Suha** | PostgreSQL and PostGIS |
+| **Zara and Dhruthi ** | Mapping, geocoding and Brisbane City Council data |
 
-Real-time parking availability
-
-Live traffic and event information
-
-Accessible parking filters
-
-EV charging and motorcycle parking filters
-
-Turn-by-turn walking directions
-
-Saved locations and recent searches
-
-User reports for incorrect or outdated restrictions
-
-Predictive parking availability based on historical demand
-
-Data and API Notes
-
-Parking rules should always be verified against the physical street signs.
-
-Brisbane City Council data may change, so the application should track dataset update dates.
-
-OpenStreetMap attribution must remain visible on the map.
-
-API keys and database passwords must be stored in environment variables and never committed to Git.
-
-Authors
-
-Ila — Django backend
-
-Rizwan —  frontend
-
-Suha — PostgreSQL and PostGIS
-
-Zara/Dhruti — mapping, geocoding
