@@ -1,0 +1,62 @@
+{% if error %}
+
+<div>
+  <h2>Something went wrong</h2>
+  <p>{{ error }}</p>
+</div>
+
+{% else %}
+
+<h2>Parking near {{ destination_name }}</h2>
+
+<p>
+  Searching within {{ radius }} metres for at least {{ required_stay }} hours.
+</p>
+
+{% if results %}
+
+<p>{{ results|length }} suitable parking locations found.</p>
+
+{% for spot in results %}
+
+<article>
+  <h3>{{ spot.street }}</h3>
+
+  <p>{{ spot.suburb }}</p>
+
+  <p>
+    <strong>Price:</strong>
+
+    ${{ spot.price }}/hour
+  </p>
+
+  <p>
+    <strong>Distance:</strong>
+
+    {{ spot.distance_m }} m
+  </p>
+
+  <p>
+    <strong>Maximum stay:</strong>
+
+    {{ spot.max_stay_hrs }} hours
+  </p>
+
+  <p>
+    <strong>Meter:</strong>
+
+    {{ spot.meter_no }}
+  </p>
+
+  <hr />
+</article>
+
+{% endfor %} {% else %}
+
+<h3>No suitable parking found</h3>
+
+<p>
+  Try increasing your walking distance or reducing your required parking time.
+</p>
+
+{% endif %} {% endif %}
