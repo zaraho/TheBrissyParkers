@@ -19,32 +19,40 @@
 
 {% for spot in results %}
 
-<article>
+<article
+  class="parking-card {% if forloop.first %}top-choice{% endif %}"
+  data-meter="{{ spot.meter_no }}"
+  data-lat="{{ spot.latitude }}"
+  data-lng="{{ spot.longitude }}"
+>
+  {% if forloop.first %}
+  <span class="best-badge">Best Match</span>
+  {% endif %}
+
   <h3>{{ spot.street }}</h3>
 
-  <p>{{ spot.suburb }}</p>
+  <p class="suburb">{{ spot.suburb }}</p>
 
-  <p>
-    <strong>Price:</strong>
-    {{ spot.price|default_if_none:"FREE" }}
-  </p>
+  <div class="parking-details">
+    <span>
+      <strong>Price:</strong>
+      {{ spot.price|default_if_none:"FREE" }}
+    </span>
 
-  <p>
-    <strong>Distance:</strong>
-    {{ spot.distance_m }} m
-  </p>
+    <span>
+      <strong>Distance:</strong>
+      {{ spot.distance_m }} m
+    </span>
 
-  <p>
-    <strong>Maximum stay:</strong>
-    {{ spot.max_stay_hrs }} hours
-  </p>
-
-  <p>
-    <strong>Meter:</strong>
-    {{ spot.meter_no }}
-  </p>
-
-  <hr />
+    <span>
+      <strong>Max stay:</strong>
+      {{ spot.max_stay_hrs }} hrs
+    </span>
+    <span>
+      <strong>Coordinates:</strong>
+      {{ spot.latitude }}, {{ spot.longitude }}
+    </span>
+  </div>
 </article>
 
 {% endfor %} {% else %}
@@ -55,4 +63,16 @@
   Try increasing your walking distance or reducing your required parking time.
 </p>
 
-{% endif %} {% endif %}
+{% endif %}
+
+<!-- Data used by Leaflet -->
+
+{{ results|json_script:"parking-results-data" }}
+
+<div
+  id="destination-data"
+  data-latitude="{{ destination_latitude }}"
+  data-longitude="{{ destination_longitude }}"
+></div>
+
+{% endif %}
