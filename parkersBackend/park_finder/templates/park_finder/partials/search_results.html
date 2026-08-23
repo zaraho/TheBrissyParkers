@@ -48,11 +48,19 @@
       <strong>Max stay:</strong>
       {{ spot.max_stay_hrs }} hrs
     </span>
-    <span>
-      <strong>Coordinates:</strong>
-      {{ spot.latitude }}, {{ spot.longitude }}
-    </span>
   </div>
+  <p class="coordinates">
+    <strong>Coordinates:</strong>
+    {{ spot.latitude }}, {{ spot.longitude }}
+  </p>
+  <a
+    class="maps-button"
+    href="https://www.google.com/maps/search/?api=1&query={{ spot.latitude }},{{ spot.longitude }}"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Open in Google Maps
+  </a>
 </article>
 
 {% endfor %} {% else %}

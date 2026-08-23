@@ -278,9 +278,31 @@
         padding-top: 180px;
       }
       .coordinates {
-        margin: 10px 0 0;
+        margin: 12px 0 18px;
         font-size: 12px;
         color: #777;
+      }
+      .coordinates strong {
+        color: #333;
+      }
+
+      .maps-button {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 8px 12px;
+
+        background-color: #222;
+        color: white;
+
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 600;
+
+        border-radius: 6px;
+      }
+
+      .maps-button:hover {
+        background-color: #444;
       }
     </style>
   </head>
@@ -480,6 +502,9 @@
           updateParkingMap();
           document.querySelectorAll(".parking-card").forEach((card) => {
             card.addEventListener("click", function () {
+              if (event.target.closest(".maps-button")) {
+                return;
+              }
               const meter = this.dataset.meter;
               const marker = parkingMarkers[meter];
 
